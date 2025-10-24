@@ -31,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(EncryptCookies::class);
         $middleware->append(AddQueuedCookiesToResponse::class);
         $middleware->append(StartSession::class);
+
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
