@@ -1,18 +1,73 @@
 root = true
 
+# Universal settings
 [*]
-charset = utf-8
 end_of_line = lf
-indent_size = 4
-indent_style = space
 insert_final_newline = true
+charset = utf-8
 trim_trailing_whitespace = true
+indent_style = space
 
-[*.md]
-trim_trailing_whitespace = false
+# Default indent size
+indent_size = 4
 
-[*.{yml,yaml}]
+# PHP files
+[*.php]
+indent_size = 4
+max_line_length = 120
+
+# Blade templates
+[*.blade.php]
+indent_size = 4
+
+# JSON & JSONC
+[*.json]
+indent_style = space
 indent_size = 2
 
-[compose.yaml]
-indent_size = 4
+[*.jsonc]
+indent_style = space
+indent_size = 2
+
+# JavaScript & JSX
+[*.js]
+indent_style = space
+indent_size = 2
+
+[*.jsx]
+indent_style = space
+indent_size = 2
+
+# TypeScript & TSX
+[*.ts]
+indent_style = space
+indent_size = 2
+
+[*.tsx]
+indent_style = space
+indent_size = 2
+
+# Vue files
+[*.vue]
+indent_style = space
+indent_size = 2
+
+# YAML (Docker Compose, GitHub Actions, etc.)
+[*.yml]
+indent_style = space
+indent_size = 2
+
+[*.yaml]
+indent_style = space
+indent_size = 2
+
+# Markdown
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+# Environment files
+[.env*]
+indent_style = space
+indent_size = 2
