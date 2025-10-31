@@ -4,6 +4,7 @@ namespace App\Services\Reports;
 
 use App\Models\LogEvent;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ConversionFunnelReport extends BaseReportService
 {
@@ -11,11 +12,18 @@ class ConversionFunnelReport extends BaseReportService
     {
         [$start, $end] = $this->dateRange($startDate, $endDate);
 
-        $funnel = LogEvent::query()
-            ->forUserMarkets($this->user, $markets)
-            ->betweenDates($start, $end)
-            ->conversionFunnel()
-            ->get();
+        $cacheKey = "funnel:$this->user->id:".md5(json_encode([$markets, $start, $end]));
+
+        $funnel = Cache::remember(
+            key: $cacheKey,
+            ttl: 300,
+            callback: fn () => LogEvent::query()
+                ->forUserMarkets($this->user, $markets)
+                ->betweenDates($start, $end)
+                ->conversionFunnel()
+                ->with('eventName:id,name')
+                ->get()
+        );
 
         return $this->calculateConversionPercentages($funnel);
     }
@@ -30,12 +38,12 @@ class ConversionFunnelReport extends BaseReportService
 
             foreach ($steps as $step) {
                 $percentage = $previous
-                    ? round(($step->conversions_total / $previous) * 100, 2)
+                    ? min(round(($step->conversions_total / $previous) * 100, 2), 100)
                     : 100;
 
                 $results[] = [
                     'market_id' => $marketId,
-                    'event_name' => $step->event_name,
+                    'event_name' => $step->eventName->name,
                     'conversions_total' => $step->conversions_total,
                     'conversions_percentage' => $percentage,
                 ];

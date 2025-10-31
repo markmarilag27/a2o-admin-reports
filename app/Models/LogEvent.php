@@ -104,16 +104,17 @@ class LogEvent extends Model
     #[Scope]
     protected function conversionFunnel(Builder $query): Builder
     {
+        $table = $this->getTable();
+
         return $query
-            ->join('event_names', 'event_names.id', '=', "{$this->getTable()}.event_name_id")
             ->select([
-                "{$this->getTable()}.market_id",
-                'event_names.id as event_id',
-                'event_names.name as event_name',
+                "{$table}.market_id",
+                "{$table}.event_name_id",
                 DB::raw('COUNT(DISTINCT session_id) as conversions_total'),
             ])
-            ->groupBy("{$this->getTable()}.market_id", 'event_names.id', 'event_names.name')
-            ->orderBy("{$this->getTable()}.market_id")
-            ->orderBy('event_names.id');
+            ->whereNull("{$table}.deleted_at")
+            ->groupBy("{$table}.market_id", "{$table}.event_name_id")
+            ->orderBy("{$table}.market_id")
+            ->orderBy("{$table}.event_name_id");
     }
 }
